@@ -1,16 +1,16 @@
 <template>
   <img alt="Vue logo" src="./assets/logo.png">
-  <MemoIndex msg="There are your Notes!"/>
+  <MemoIndex/>
 </template>
 
 <script>
-import MemoIndex from './components/HelloWorld.vue'
+import MemoIndex from './components/MemoIndex.vue'
 
 export default {
   name: 'App',
   components: {
     MemoIndex,
-}
+  }
 }
 </script>
 

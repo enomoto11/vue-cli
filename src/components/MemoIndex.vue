@@ -1,24 +1,24 @@
 <template>
   <div class="memo">
-    <h1>{{ msg }}</h1>
+    <h1>Input your new note!</h1>
     <ul>
       <li v-for="(item, index) in topTodos" :key="index">
-        <span @click="tryToEditTodo(index),makeTrueToEdit()">
+        <span @click="tryToEditTodo(index),isTrueToEdit()">
           {{ item }}
         </span>
       </li>
       <li>
-        <span @click="makeTrueToAdd()">+</span>
+        <span @click="isTrueToAdd()">+</span>
       </li>
     </ul>
     <div v-if="whetherToAdd">
-      <textarea v-model="addTemp"></textarea>
+      <textarea v-model="addItem"></textarea>
       <button @click="addTodo()">追加</button><br>
     </div>
     <div v-if="whetherToEdit">
-        <textarea v-model="editTemp"></textarea>
-        <button @click="editTodo()">編集</button>
-        <button @click="deleteTodo()">削除</button>
+      <textarea v-model="editItem"></textarea>
+      <button @click="editTodo()">編集</button>
+      <button @click="deleteTodo()">削除</button>
     </div>
   </div>
 </template>
@@ -26,71 +26,72 @@
 <script>
 export default {
   name: 'MemoIndex',
-  props: {
-    msg: String
-  },
   data: function() {
     return{
       whetherToAdd: false,
       whetherToEdit: false,
       todos: [],
       topTodos: [],
-      addTemp: null,
-      editTemp: null,
-      editIndex: null,
+      addItem: '',
+      editItem: '',
+      editIndex: '',
     }
   },
   mounted() {
     if (localStorage.getItem('memos')) {
-      try {
-        this.todos = JSON.parse(localStorage.getItem('memos'));
-      } catch(e) {
-        localStorage.removeItem('memos');
-      }
+      this.todos = JSON.parse(localStorage.getItem('memos'))
     }
     for (let i = 0; i < this.todos.length; i++) {
       this.topTodos[i] = this.todos[i].split('\n')[0]
     }
   },
   methods: {
-    makeTrueToAdd() {
+    isTrueToAdd() {
       this.whetherToAdd = true
       this.whetherToEdit = false
-      this.editTemp =''
-      this.editIndex=''
+      this.editItem = ''
+      this.editIndex = ''
     },
-    makeTrueToEdit() {
+    isTrueToEdit() {
       this.whetherToAdd = false
       this.whetherToEdit = true
-      this.addTemp = null
+      this.addItem = ''
     },
     addTodo() {
-      this.todos.push(this.addTemp)
-      this.topTodos.push(this.addTemp.split('\n')[0])
-      this.addTemp = null
-      this.saveTodo()
+      if (this.addItem !== '') {
+        this.todos.push(this.addItem)
+        this.topTodos.push(this.addItem.split('\n')[0])
+        this.addItem = ''
+        this.saveTodo()
+      } else {
+        window.alert('空欄でTODO LISTへ追加はできません')
+      }
     },
-    saveTodo(){
+    saveTodo() {
       const parsed = JSON.stringify(this.todos);
       localStorage.setItem('memos', parsed);
     },
     deleteTodo() {
       this.todos.splice(this.editIndex,1)
       this.topTodos.splice(this.editIndex,1)
-      this.editTemp = null
-      this.editIndex= null
+      this.editItem = ''
+      this.editIndex = ''
       this.saveTodo()
     },
-    tryToEditTodo(index) {
-      this.editTemp = this.todos[index]
+    tryToEditTodo (index) {
+      this.editItem = this.todos[index]
       this.editIndex = index
     },
     editTodo() {
-      this.todos.splice(this.editIndex, 1, this.editTemp)
-      this.topTodos.splice(this.editIndex, 1, this.editTemp.split('\n')[0])
-      this.editTemp = null
-      this.editIndex= null
-      this.saveTodo()
+      if (this.editItem !== ''){
+        this.todos.splice(this.editIndex, 1, this.editItem)
+        this.topTodos.splice(this.editIndex, 1, this.editItem.split('\n')[0])
+        this.editItem = ''
+        this.editIndex = ''
+        this.saveTodo()
+      } else {
+        window.alert('空欄で編集はできません')
+      }
     }
   }
 }
